@@ -15,6 +15,7 @@ a { text-decoration: none; color: blue; }
   a:hover { color: orange; }
 
 .aligncenter {text-align: center;}
+.alignleft {text-align: left;}
 
 P.blocktext {
   margin-left: auto;
@@ -67,3 +68,4 @@ img{
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
 }
+
