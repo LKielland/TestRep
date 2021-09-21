@@ -1,9 +1,8 @@
 <!DOCTYPE HTML>
 <link rel="stylesheet" href="Style/style.css">
-<link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript" src="javascript.js"></script>
+
+
     
 <html>
     <head>
@@ -25,12 +24,16 @@
         <section id=”innhold”>
             <h1>Portfolio</h1>
             <p>
-            På denne siden kommer jeg til å legge ut informasjon om prosjekter jeg har deltatt på.   </p>
-            <p> <a href="#TreAaring">Tre-åring simulator, skrevet i Python</a></p>    
-            <p> <a href="#Musikk">Diverse musikkgreier</a></p>    
-            <p> <a href="#Lydbibliotek">Lydbibliotek for Soundly</a></p>    
-
-
+            På denne siden kommer jeg til å legge ut informasjon om prosjekter jeg har deltatt på.   
+        </p>
+        <p>
+            <div class="pagination">
+                <a href="#TreAaring">Python</a>
+                <a href="#Musikk">Musikk</a>
+                <a href="#Lydbibliotek">Lydbibliotek</a>
+              </div>
+              <br> 
+            </p>
         <hr>
         <section id="TreAaring">
             <h2>Tre-åring simulatoren</h2>
@@ -41,130 +44,150 @@
                 samboeren og treåringen skulle på tur til Trondheim og jeg tenkte det ville 
                 være fint å ha en liten virtuell treåring som kunne holde meg med selskap dersom det ble for ensomt.
             </p>
-            <p>
-                <pre><code class="python">
-                import random
-                import time
-                import datetime
-                import threading
-                from threading import Timer
-                from tkinter import *
-                from tkinter import ttk
-                mep = ' '
-                class Barn:
-                    def __init__(self):
-                        self.sier = ''
-                        self.spm = [
-                            'Hva er skyer?',
-                            'Hva er månen?',
-                            'Hvorfor døde dinosaurene?',
-                            'Hva skjer hvis vi ikke spiser?',
-                            'Hvorfor kommer søppelbilen?',
-                            'Hvorfor må jeg pusse tennene?',
-                            ]
-                        self.ikke_ord = ['vi', 'a', 'oss', 'det','den','hun','han','dersom','hvis','hvor','helt','er','fordi','de','som','du','deg']
-                        self.mase_index = 0
-                        self.maseliste = []
-                    def generer_maseliste(self, mep):
-                        self.maseliste = [mep + '?', mep.capitalize() + '?', mep.upper() + '?!', mep.upper() + 2 * mep[-1].upper() + '?!?',
-                                     mep.upper() + 5 * mep[-1].upper() + '?!?!?']
-                class TreGUI:
-                    def __init__(self, master):
-                        self.first_question = True
-                        self.barn = Barn()
+                <p>Jeg har lagt ved Python-koden under:</p>
+<button type="button" class="collapsible">Se kode</button>
+<div class="content">
+  <p><pre><code class="python">
+    import random
+    import time
+    import datetime
+    import threading
+    from threading import Timer
+    from tkinter import *
+    from tkinter import ttk
+    mep = ' '
+    class Barn:
+        def __init__(self):
+            self.sier = ''
+            self.spm = [
+                'Hva er skyer?',
+                'Hva er månen?',
+                'Hvorfor døde dinosaurene?',
+                'Hva skjer hvis vi ikke spiser?',
+                'Hvorfor kommer søppelbilen?',
+                'Hvorfor må jeg pusse tennene?',
+                ]
+            self.ikke_ord = ['vi', 'a', 'oss', 'det','den','hun','han','dersom','hvis','hvor','helt','er','fordi','de','som','du','deg']
+            self.mase_index = 0
+            self.maseliste = []
+        def generer_maseliste(self, mep):
+            self.maseliste = [mep + '?', mep.capitalize() + '?', mep.upper() + '?!', mep.upper() + 2 * mep[-1].upper() + '?!?',
+                         mep.upper() + 5 * mep[-1].upper() + '?!?!?']
+    class TreGUI:
+        def __init__(self, master):
+            self.first_question = True
+            self.barn = Barn()
+            self.responded = False
+            self.t1 = None
+            self.t2 = None
+            self.barnet_sier = StringVar()
+            self.master = master
+            self.mase_index =0
+            self.maseliste = []
+            self.mep = ''
+            self.i = 0
+            self.progress = 0
+            self.seperator = ', '
+            self.respons = ''
+            self.master.title("Treåring-simulator")
+            self.master.geometry("500x200")
+            self.Label1 = Label(master, text="Velkommen til tråring simulatoren.")
+            self.Label1.grid(row=0, column=1)
+            self.Label2 = Label(master, textvariable=self.barnet_sier)
+            self.Label2.grid(row=1, column=1)
+            self.Button1 = Button(master, text="Svar", command=self.myClick)
+            self.Button1.grid(row=4, column=1)
+            self.entry = Entry(master, width=50, borderwidth=5)
+            self.entry.grid(row=3, column=1)
+            self.entry.bind("&gt;Return&lt;", self.on_change)
+            self.wait_for_identification()
+            if not self.hallo():
+                return
+            self.questions()
+        def wait_for_identification(self):
+            self.barnet_sier.set('Er du Mamma eller Pappa?')
+            while self.mep == '':
+                self.master.update()  #den opdaterer GUIen
+            print("MEP:" ,self.mep)
+            self.barnet_sier.set('3-åringen kommer inn i rommet. \nHan tasser litt rundt før han stopper brått og ser opp med et tankefult blikk.')
+            self.progress += 1
+            print(str(self.barnet_sier))
+        def myClick(self):
+            self.respons = self.entry.get().lower()
+            if self.first_question:
+                self.mep = self.respons
+                self.barn.generer_maseliste(self.mep)
+                self.first_question = False
+            else:
+                self.responded = True
+            self.entry.delete(0, 'end')
+            print(self.respons)
+        def on_change(self, e):
+            self.myClick()
+        def hallo_svar(self):
+            while 'ja' not in self.respons:
+                self.respons = self.seperator.join(self.respons)
+                self.respons = self.respons.translate({ord(i): None for i in '!?.,:;'})
+                self.respons = self.respons.lower().split()
+            self.t1.cancel()
+        def hallo(self):
+            t0 = datetime.datetime.now().second
+            while self.barn.mase_index &lt; len(self.barn.maseliste) and not 'ja' in self.respons:
+                self.barnet_sier.set(self.barn.maseliste[self.barn.mase_index])
+                self.Label2.text = self.barnet_sier
+                print(self.barnet_sier.get())
+                self.master.update()
+                print(datetime.datetime.now().second - t0)
+                if(datetime.datetime.now().second - t0) > 3.0:
+                    print("indexx ++")
+                    self.barn.mase_index += 1
+                    t0 = datetime.datetime.now().second
+                time.sleep(0.1)
+            if not 'ja' in self.respons:
+                self.barnet_sier.set('Barnet ble lei av å vente, og løper nå rundt med en saks i hånda\nDu har mislykkes som forelder, men det kommer flere utfordringer. Lykke til neste gang!')
+                return False
+            self.progress +=1
+            return True
+        def questions(self):
+            self.barnet_sier.set(random.choice(self.barn.spm))
+            self.responded = False
+            print(self.barnet_sier.get())
+            while self.i &lt;= 10:
+                if self.responded:
+                    self.svar = self.respons
+                    self.svar = self.svar.translate({ord(i): None for i in '!?.,:;'})
+                    self.svar = self.svar.lower().split()
+                    self.svarliste = [x for x in self.svar if x not in self.barn.ikke_ord]
+                    if len(self.svarliste) &lt; 1:
+                        self.barnet_sier.set('Det er ikke noe årntli svar!')
+                    else:
+                        self.barnet_sier.set('Hvorfor ' + random.choice(self.svarliste))
+                        self.i += 1
                         self.responded = False
-                        self.t1 = None
-                        self.t2 = None
-                        self.barnet_sier = StringVar()
-                        self.master = master
-                        self.mase_index =0
-                        self.maseliste = []
-                        self.mep = ''
-                        self.i = 0
-                        self.progress = 0
-                        self.seperator = ', '
-                        self.respons = ''
-                        self.master.title("Treåring-simulator")
-                        self.master.geometry("500x200")
-                        self.Label1 = Label(master, text="Velkommen til tråring simulatoren.")
-                        self.Label1.grid(row=0, column=1)
-                        self.Label2 = Label(master, textvariable=self.barnet_sier)
-                        self.Label2.grid(row=1, column=1)
-                        self.Button1 = Button(master, text="Svar", command=self.myClick)
-                        self.Button1.grid(row=4, column=1)
-                        self.entry = Entry(master, width=50, borderwidth=5)
-                        self.entry.grid(row=3, column=1)
-                        self.entry.bind("<Return>", self.on_change)
-                        self.wait_for_identification()
-                        if not self.hallo():
-                            return
-                        self.questions()
-                    def wait_for_identification(self):
-                        self.barnet_sier.set('Er du Mamma eller Pappa?')
-                        while self.mep == '':
-                            self.master.update()  #den opdaterer GUIen
-                        print("MEP:" ,self.mep)
-                        self.barnet_sier.set('3-åringen kommer inn i rommet. \nHan tasser litt rundt før han stopper brått og ser opp med et tankefult blikk.')
-                        self.progress += 1
-                        print(str(self.barnet_sier))
-                    def myClick(self):
-                        self.respons = self.entry.get().lower()
-                        if self.first_question:
-                            self.mep = self.respons
-                            self.barn.generer_maseliste(self.mep)
-                            self.first_question = False
-                        else:
-                            self.responded = True
-                        self.entry.delete(0, 'end')
-                        print(self.respons)
-                    def on_change(self, e):
-                        self.myClick()
-                    def hallo_svar(self):
-                        while 'ja' not in self.respons:
-                            self.respons = self.seperator.join(self.respons)
-                            self.respons = self.respons.translate({ord(i): None for i in '!?.,:;'})
-                            self.respons = self.respons.lower().split()
-                        self.t1.cancel()
-                    def hallo(self):
-                        t0 = datetime.datetime.now().second
-                        while self.barn.mase_index < len(self.barn.maseliste) and not 'ja' in self.respons:
-                            self.barnet_sier.set(self.barn.maseliste[self.barn.mase_index])
-                            self.Label2.text = self.barnet_sier
-                            print(self.barnet_sier.get())
-                            self.master.update()
-                            print(datetime.datetime.now().second - t0)
-                            if(datetime.datetime.now().second - t0) > 3.0:
-                                print("indexx ++")
-                                self.barn.mase_index += 1
-                                t0 = datetime.datetime.now().second
-                            time.sleep(0.1)
-                        if not 'ja' in self.respons:
-                            self.barnet_sier.set('Barnet ble lei av å vente, og løper nå rundt med en saks i hånda\nDu har mislykkes som forelder, men det kommer flere utfordringer. Lykke til neste gang!')
-                            return False
-                        self.progress +=1
-                        return True
-                    def questions(self):
-                        self.barnet_sier.set(random.choice(self.barn.spm))
-                        self.responded = False
-                        print(self.barnet_sier.get())
-                        while self.i <= 10:
-                            if self.responded:
-                                self.svar = self.respons
-                                self.svar = self.svar.translate({ord(i): None for i in '!?.,:;'})
-                                self.svar = self.svar.lower().split()
-                                self.svarliste = [x for x in self.svar if x not in self.barn.ikke_ord]
-                                if len(self.svarliste) < 1:
-                                    self.barnet_sier.set('Det er ikke noe årntli svar!')
-                                else:
-                                    self.barnet_sier.set('Hvorfor ' + random.choice(self.svarliste))
-                                    self.i += 1
-                                    self.responded = False
-                            self.master.update()
-                            time.sleep(0.1)
-                        self.barnet_sier.set('Åjah...", sier 3-åringen mens han tussler rolig ut av rommet.\nGratulerer! Du har lykkes som forelder, enn så lenge. Lykke til neste gang!')
-                root = Tk()
-                minGUI = TreGUI(root)
-                root.mainloop()</code> </p>
+                self.master.update()
+                time.sleep(0.1)
+            self.barnet_sier.set('Åjah...", sier 3-åringen mens han tussler rolig ut av rommet.\nGratulerer! Du har lykkes som forelder, enn så lenge. Lykke til neste gang!')
+    root = Tk()
+    minGUI = TreGUI(root)
+    root.mainloop()</code> </p>
+</div>
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
+    </script>
+                
         </section>
         <p> <a href="#top">Tilbake til toppen</a></p>    
 
@@ -219,7 +242,13 @@
             <img src="bilder/macse.JPG" width="50%" height="50%" alt="Macintosh SE">
         </p>
         </section>
-        <p> <a href="#top">Tilbake til toppen</a></p>    
+        <p> 
+        <a href="#top">Tilbake til toppen</a></p>    
+
+
+
+
+
 
         </body>
 </html>
