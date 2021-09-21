@@ -27,6 +27,8 @@ img{
     max-width: 100%;
     min-width: 300px;
     height: auto;
+    border: 2px solid #111;
+    box-shadow: 5px 5px 5px #555;
 }
 
 .sidenav {
