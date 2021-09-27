@@ -1,9 +1,9 @@
 
 html { font-family: Arial; }
 body { padding: 10px 30px; font-family: "Lato", sans-serif;}
-h1 { font-size: 1.8em; color: rgb(255, 248, 238); text-shadow: 2px 2px 5px black;}
-h2 { font-size: 1.2em; }
-h3 { font-size: 1.2em; text-align: center; }
+h1 { font-size: 1.8rem; color: rgb(255, 248, 238); text-shadow: 2px 2px 5px black;}
+h2 { font-size: 1.2rem; }
+h3 { font-size: 1.2rem; text-align: center; }
 nav { background: black; padding: 5px; }
   nav ul { list-style: none; }
   nav ul li { display: inline; margin-left: 15px; font-weight: bold; }
@@ -70,34 +70,6 @@ img{
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
 }
-
-
-
- /* Style the button that is used to open and close the collapsible content */
- .collapsible {
-  background-color: #777;
-  color: white;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 15px;
-}
-
-.active, .collapsible:hover {
-  background-color: #555;
-}
-
-.content {
-  padding: 0 18px;
-  display: none;
-  overflow: hidden;
-  background-color: #f1f1f1;
-}
-
-
  /* Pagination links */
  .pagination a {
   color: black;
@@ -116,3 +88,27 @@ img{
 
 /* Add a grey background color on mouse-over */
 .pagination a:hover:not(.active) {background-color: #ddd;} 
+
+.collapsed {
+  display: none;
+}
+
+.expanded {
+  display: block;
+}
+
+#btn1 {
+  color: black;
+  padding: 8px 36px;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color .3s;
+
+
+}
+#btn1.active {
+  background-color: rgb(26, 45, 65);
+  color: rgb(175, 38, 38);
+}
+#btn1:hover:not(.active) {background-color: rgb(208, 209, 211);} 
+
